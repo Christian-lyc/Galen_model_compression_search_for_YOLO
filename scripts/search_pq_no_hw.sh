@@ -2,7 +2,7 @@
 
 nohup python -u ../tools/search_policy.py \
   --model yolov8n \
-  --ckpt_load_path /export/home/yliu/galen-main/scripts/results/checkpoints/yolov8n.pt \
+  --ckpt_load_path /export/home/yourdirectory/galen-main/scripts/results/checkpoints/yolov8n.pt \
   --log_dir ./logs \
   --agent pruning-quantization-agent \
   --episodes 100 \
