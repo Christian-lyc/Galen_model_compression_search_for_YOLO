@@ -190,7 +190,7 @@ class SensitivityAnalysis:
     def _analyse_for_sensitivity(self, reference_model, policy, reference_probabilities) -> float:
         _, compressed_model, _ = self._compress_adapter.do_compress(policy, reference_model)
         distorted_probabilities = self._evaluator.sample_log_probabilities(compressed_model)
-        result=(distorted_probabilities[0]/reference_probabilities[0])#.mean().cpu().item()
-        # result = F.kl_div(distorted_probabilities, reference_probabilities, reduction='batchmean',
-        #                   log_target=True).cpu().item()
+        
+        result = F.kl_div(distorted_probabilities, reference_probabilities, reduction='batchmean',
+                           log_target=True).cpu().item()
         return result
