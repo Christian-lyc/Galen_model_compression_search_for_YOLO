@@ -94,16 +94,10 @@ class TorchOnlyEvaluator(AModelEvaluator,DetectionValidator,BaseTrainer):
 
         pytorch_model=executable_model._reference_model
 
-        #pytorch_model = executable_model.pytorch_model###
-
         pytorch_model.to(self._target_device)
         pytorch_model.train()###
 
 
-        #
-        #criterion = torch.nn.CrossEntropyLoss()
-        #optimizer = torch.optim.SGD(pytorch_model.parameters(), lr=self._retrain_lr, momentum=self._retrain_mom,
-        #                           weight_decay=self._retrain_weight_decay)
         optimizer = self.build_optimizer(model=pytorch_model,
                                               name=self.args.optimizer,
                                               lr=self._retrain_lr,
@@ -145,24 +139,15 @@ class TorchOnlyEvaluator(AModelEvaluator,DetectionValidator,BaseTrainer):
                 data['cls']=data['cls'].to(self._target_device)
                 data['batch_idx']=data['batch_idx'].to(self._target_device)
                 optimizer.zero_grad()
-        #
 
                 logits = pytorch_model(inputs)
 
-        #        logits = self.postprocess(logits) ###
-        #        self.update_metrics(logits, data) ###
-           #     logits = pytorch_model(inputs)
-                ###loss_total += pytorch_model.loss(inputs,logits)
-           #     loss = criterion(logits, targets)
+
                 loss,loss_items=self.criterion([t.to('cuda') for t in logits],data)
 
                 loss.backward()
                 optimizer.step()
-                ###batch_map[batch_idx] =
-                # batch_acc[batch_idx] = self._acc(logits.detach(), targets.detach(), topk=(1,)).item()
-                # batch_losses[batch_idx] = loss.detach().cpu()
-        #    stats = self.get_stats()###
-        #    print(stats['metrics/mAP50(B)'])###
+
             scheduler.step()
             epoch_losses[epoch] = torch.mean(batch_losses)
             epoch_acc[epoch] = torch.mean(batch_acc)
@@ -211,12 +196,11 @@ class TorchOnlyEvaluator(AModelEvaluator,DetectionValidator,BaseTrainer):
                 logits = pytorch_model(inputs)
                 logits = self.postprocess(logits)
                 self.update_metrics(logits, data)
-                #batch_acc[:, batch_idx] = self._acc(logits.detach(), targets.detach())
-            #acc = torch.mean(batch_acc, dim=1)
+
             stats = self.get_stats()
         evaluation_metrics = {
             "mAP50": stats['metrics/mAP50(B)'],
-        #    "acc_top5": acc[1].item()
+
         }
         evaluation_metrics.update(self._compute_with_extractor(executable_model, self._mac_extractor))
         # for now skip mac and bop extractions for phase steps
@@ -243,20 +227,13 @@ class TorchOnlyEvaluator(AModelEvaluator,DetectionValidator,BaseTrainer):
 
                     logits = pytorch_model(inputs_)
                     logits_1 = self.postprocess(logits)
-                    #logits = self.postprocess(logits)
-                    #self.update_metrics(logits, inputs)
-                    #logits_stack = [t[0,:-2] if t.numel() !=0 else torch.zeros(4).to(self._target_device) for t in logits_1]
-                    logits_stack = [t[0] for t in logits_1]
+                    logits_stack = [t[0,:-2] if t.numel() !=0 else torch.zeros(4).to(self._target_device) for t in logits_1]
                     logits_2 = torch.stack(logits_stack, dim=0)
                     logits_2=logits_2/inputs_.shape[-1]
                     safe_x = torch.clamp(logits_2, min=eps)
                     outputs = torch.log(safe_x).detach()
-                    outputs = logits_2.detach()
-                    # stats = self.get_stats()
-                        #outputs = F.log_softmax(logits_2, dim=1).detach()
-                    # all_outputs.append(stats['metrics/mAP50(B)'])
 
-                return outputs#torch.cat(all_outputs, dim=0)
+                return outputs
 
     @staticmethod
     def _compute_with_extractor(executable_model: TorchExecutableModel, extractor):
