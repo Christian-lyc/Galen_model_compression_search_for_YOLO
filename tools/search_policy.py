@@ -196,9 +196,6 @@ if __name__ == '__main__':
     else:
         device = torch.device('cpu')
 
-    # from ultralytics import YOLO
-    # model = YOLO('/home/yichao/Desktop/tick/model_compression/torch_prune_example/original.pt')
-    # metrics=model.val(data="/home/yichao/Desktop/tick/model_compression/torch_prune_example/data.yaml")
 
     agent = agent_provider(args.agent, device, alg_config)
     search_id = f"{agent.get_search_id()}_{args.add_search_identifier}"
