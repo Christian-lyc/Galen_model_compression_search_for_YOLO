@@ -10,4 +10,4 @@ Deep Learning in the Wild](https://practical-dl.github.io/))
 
 original repository is here: https://github.com/UniHD-CEG/galen/tree/main
 
-![Alt text](image_url_or_path)
+![Alt text](KL.png)
