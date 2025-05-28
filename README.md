@@ -7,3 +7,5 @@ The layer-wise compression is determined by a RL algorithm which uses the sensit
 [**Towards Hardware-Specific Automatic Compression of Neural Networks**
 ](https://arxiv.org/abs/2212.07818) ([AAAI-23: 2nd International Workshop on Practical
 Deep Learning in the Wild](https://practical-dl.github.io/))
+
+original repository is here: https://github.com/UniHD-CEG/galen/tree/main
